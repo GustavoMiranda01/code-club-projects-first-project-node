@@ -47,7 +47,7 @@ app.post("/users", (request, response) => {
 
   users.push(user);
 
-  return response.status(201).json(users);
+  return response.status(201).json(user);
 });
 
 app.put("/users/:id", checkUserId, (request, response) => {
