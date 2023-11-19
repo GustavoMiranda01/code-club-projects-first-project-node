@@ -7,12 +7,25 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const orders = [];
+/*
+    - Query params => meusite.com/users?name=gustavo&age29  //Filtros
+    - Route params => /users/2     //Buscar, Deletar ou atualizar algo específico
+    - Request Body => { "name":"Gustavo", "age":} // quando mandamos informações no corpo da minha requisição
+    
+    - GET          => Buscar informação np back-end
+    - POST         => Criar informação no back-end
+    - PUT / PATCH  => Sltersr/Atualizar informação no back-end
+    - Delete       => Deletar informação no back-end
 
-const checkOrderId = (request, response, next) => {
+    - Middleware => INTERCEPTADOR => Tem o poder de para ou alterar dados da requisição
+*/
+
+const users = [];
+
+const checkUserId = (request, response, next) => {
   const { id } = request.params;
 
-  const index = orders.findIndex((order) => order.id === id);
+  const index = users.findIndex((user) => user.id === id);
 
   if (index < 0) {
     return response.status(404).json({ message: "User not found" });
@@ -24,36 +37,35 @@ const checkOrderId = (request, response, next) => {
   next()
 };
 
-app.get("/orders", (request, response) => {
-  return response.json(orders);
+app.get("/users", (request, response) => {
+  return response.json(users);
 });
 
-app.post("/orders", (request, response) => {
-  const { order, name } = request.body;
+app.post("/users", (request, response) => {
+  const { name, age } = request.body;
+  const user = { id: uuid.v4(), name, age };
 
-  const newOrder = { id: uuid.v4(), order, name };
+  users.push(user);
 
-  orders.push(newOrder);
-
-  return response.status(201).json(newOrder);
+  return response.status(201).json(user);
 });
 
-app.put("/orders/:id", checkOrderId, (request, response) => {
-  const { order, name } = request.body;
+app.put("/users/:id", checkUserId, (request, response) => {
+  const { name, age } = request.body;
   const index = request.userIndex;
   const id = request.userId
 
-  const updateOrder = { id, order, name };
+  const updateUser = { id, name, age };
 
-  orders[index] = updateUser;
+  users[index] = updateUser;
 
-  return response.json(updateOrder);
+  return response.json(updateUser);
 });
 
-app.delete("/orders/:id", checkOrderId, (request, response) => {
-  const index = request.OrderIndex;
+app.delete("/users/:id", checkUserId, (request, response) => {
+  const index = request.userIndex;
 
-  orders.splice(index, 1);
+  users.splice(index, 1);
 
   return response.status(204).json();
 });
